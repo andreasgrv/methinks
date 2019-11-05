@@ -10,7 +10,7 @@ setup(
       license='BSD',
       keywords=['self reporting'],
       scripts=['bin/methinks',
-               'bin/methought',
+               # 'bin/methought',
                # 'bin/recap'
                ],
       classifiers=[],
