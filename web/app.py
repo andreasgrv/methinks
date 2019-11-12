@@ -5,9 +5,9 @@ from flask_migrate import Migrate
 from methinks.db import db
 
 
-db_uri = 'postgres://%s:%s@localhost/%s' % (os.environ['DB_USER'],
-                                            os.environ['DB_PASSWD'],
-                                            os.environ['DB_NAME'])
+db_uri = 'postgresql://%s:%s@localhost/%s' % (os.environ['DB_USER'],
+                                              os.environ['DB_PASSWD'],
+                                              os.environ['DB_NAME'])
 
 
 def create_app():
