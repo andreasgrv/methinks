@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
       name='methinks',
-      packages=find_packages(include=['methinks', 'methinks.*']),
+      packages=find_packages(include=['methinks', 'methinks.*', 'web']),
       version='0.0.1',
       author='Andreas Grivas',
       author_email='andreasgrv@gmail.com',
