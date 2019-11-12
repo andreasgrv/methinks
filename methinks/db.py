@@ -1,3 +1,4 @@
+import os
 import datetime
 import xxhash
 import json
@@ -9,6 +10,8 @@ db = SQLAlchemy()
 
 class Entry(db.Model):
     __tablename__ = 'entry'
+
+    DATEFORMAT = '%Y-%m-%d-%a'
 
     id = db.Column(db.Integer, primary_key=True)
     hexid = db.Column(db.String(16), unique=True, nullable=False, index=True)
@@ -38,6 +41,18 @@ class Entry(db.Model):
         hs = xxhash.xxh64(content).hexdigest()
         return hs
 
+    @classmethod
+    def string_to_date(cl, text):
+        return datetime.datetime.strptime(text, cl.DATEFORMAT).date()
+
+    @classmethod
+    def date_to_string(cl, date):
+        return date.strftime(cl.DATEFORMAT)
+
+    @property
+    def filename(self):
+        return '%s.txt' % Entry.date_to_string(self.date)
+
     def as_dict(self):
         d = dict(id=self.id,
                  hexid=self.hexid,
@@ -46,3 +61,16 @@ class Entry(db.Model):
                  last_edited=self.last_edited,
                  misc=self.misc)
         return d
+
+    def to_file(self, folderpath):
+        path = os.path.join(folderpath, self.filename)
+        with open(path, 'w') as f:
+            f.write(self.text)
+
+    @classmethod
+    def from_file(cl, filepath):
+        with open(filepath, 'r') as f:
+            contents = f.read()
+        filename = os.path.basename(filepath).replace('.txt', '')
+        date = cl.string_to_date(filename)
+        return Entry(text=contents, date=date)

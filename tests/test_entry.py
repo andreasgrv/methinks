@@ -33,3 +33,11 @@ def test_hash_misc_sensitive():
 def test_datetime_fails():
     with pytest.raises(AssertionError):
         e1 = Entry(text='abra', date=datetime.datetime.now(), misc=dict(a=3))
+
+
+def test_file_serialization(tmp_path):
+    e1 = Entry(text='abra', date=datetime.date.today())
+    e1.to_file(tmp_path)
+    fname = '%s.txt' % Entry.date_to_string(e1.date)
+    e2 = Entry.from_file(tmp_path / fname)
+    assert e1.hash == e2.hash
