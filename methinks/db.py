@@ -8,7 +8,7 @@ db = SQLAlchemy()
 class Entry(db.Model):
     __tablename__ = 'entry'
 
-    id = db.Column(db.String(16), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text(), nullable=False)
     date = db.Column(db.Date(), index=True, nullable=False)
     last_edited = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
