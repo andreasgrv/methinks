@@ -1,4 +1,6 @@
 import datetime
+import xxhash
+import json
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -22,6 +24,12 @@ class Entry(db.Model):
 
     def __repr__(self):
         return 'Entry: %r:\n%s' % (self.date, self.text)
+
+    @property
+    def hash(self):
+        content = '%s%s%s' % (self.text, self.date, json.dumps(self.misc))
+        hs = xxhash.xxh32(content).hexdigest()
+        return hs
 
     def as_dict(self):
         d = dict(id=self.id,
