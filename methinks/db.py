@@ -51,7 +51,7 @@ class Entry(db.Model):
 
     @property
     def filename(self):
-        return '%s.txt' % Entry.date_to_string(self.date)
+        return '%s.md' % Entry.date_to_string(self.date)
 
     def as_dict(self):
         d = dict(id=self.id,
@@ -71,6 +71,6 @@ class Entry(db.Model):
     def from_file(cl, filepath):
         with open(filepath, 'r') as f:
             contents = f.read()
-        filename = os.path.basename(filepath).replace('.txt', '')
+        filename = os.path.basename(filepath).replace('.md', '')
         date = cl.string_to_date(filename)
         return Entry(text=contents, date=date)

@@ -1,0 +1,38 @@
+#!/bin/bash
+HERE=$(dirname $(realpath $0))
+
+# Assumes this is run from the directory you have diary entries in.
+
+MEMORY=30
+
+function find_last_entry {
+	# Find the first entry before the current one
+	for i in $(seq 1 $MEMORY)
+	do
+		prev_fname=$(date --date="$i day ago" +"%Y-%m-%d-%a.md")
+		if [ -f $prev_fname ]
+		then
+			printf "Previous entry was %d day(s) ago.\n" $i
+			PREV_FOUND=$prev_fname
+			break
+		fi
+	done
+}
+
+FNAME=`date +"%Y-%m-%d-%a.md"`
+
+if [ ! -f $FNAME ]
+then
+	find_last_entry
+	# If the variable is set from the function
+	if [[ $PREV_FOUND ]]
+	then
+		today-python --infile $PREV_FOUND > $FNAME
+	else
+		today-python --infile $METHINKS_TEMPLATE > $FNAME
+	fi
+	printf "Entry created: %s\n" $FNAME
+else
+	(>&2 echo "Today's entry already exists!")
+fi
+vim $FNAME

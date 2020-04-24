@@ -1,8 +1,8 @@
 import datetime
 from methinks.db import Entry
 import pytest
-from web.app import create_app
-from web.app import db as _db
+from server.app import create_app
+from server.app import db as _db
 from sqlalchemy import event
 from sqlalchemy.orm import sessionmaker
 
