@@ -23,9 +23,6 @@ class MethinksAPI(object):
         # assert('https' in self.url)
         self.status = None
         self.message = None
-        attempt = requests.get(self.url)
-        if attempt.status_code != 200:
-            raise ValueError('Nothing running at: %s' % self.url)
 
     def _post_json(self, url, data_dict):
         data_dict['token'] = SECRET_TOKEN
@@ -44,6 +41,11 @@ class MethinksAPI(object):
         self.status = response.pop(MethinksAPI.STATUS)
         self.message = response.pop(MethinksAPI.MESSAGE)
         return response
+
+    def check_status(self):
+        attempt = requests.get(self.url)
+        if attempt.status_code != 200:
+            raise ValueError('Nothing running at: %s' % self.url)
 
     def get_latest(self):
         r = self._get_json('%s/entries/latest' % self.url)

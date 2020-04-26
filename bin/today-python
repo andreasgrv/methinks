@@ -18,9 +18,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     api = MethinksAPI(os.environ['METHINKS_HOST'])
-
-    # Fetch latest entry from remote
-    remote_entry = api.get_latest()
+    try:
+        # Fetch latest entry from remote
+        remote_entry = api.get_latest()
+    except Exception as e:
+        print('ERROR: Methinks remote get_latest not working',
+              file=sys.stderr)
+        remote_entry = None
 
     local_entry = Entry.from_file(args.infile)
 
@@ -51,16 +55,26 @@ if __name__ == "__main__":
     if remote_entry and remote_entry.date == local_entry.date:
         # If there have been any changes
         if remote_entry.hash != local_entry.hash:
-            response = api.update_entry(local_entry)
+            try:
+                response = api.update_entry(local_entry)
+            except Exception as e:
+                response = None
+                remote_entry = None
             if response is not None:
                 local_entry = response
             else:
-                print('ERROR: Methinks remote not working', file=sys.stderr)
+                print('ERROR: Methinks remote update not working',
+                      file=sys.stderr)
     else:
-        response = api.create_entry(local_entry)
+        try:
+            response = api.create_entry(local_entry)
+        except Exception as e:
+            response = None
+            remote_entry = None
         if response is not None:
             local_entry = response
         else:
-            print('ERROR: Methinks remote not working', file=sys.stderr)
+            print('ERROR: Methinks remote create not working',
+                  file=sys.stderr)
 
     print(local_entry.text, end='')
