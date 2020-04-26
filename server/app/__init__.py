@@ -5,12 +5,12 @@ from flask import Flask, request
 from flask_migrate import Migrate
 from methinks.db import db, Entry
 from methinks.utils import str_to_date
-from utils import response, validate_post, validate_get
+from app.utils import response, validate_post, validate_get
 
 
-db_uri = 'postgresql://%s:%s@localhost/%s' % (os.environ['DB_USER'],
-                                              os.environ['DB_PASSWD'],
-                                              os.environ['DB_NAME'])
+db_uri = 'postgresql://%s:%s@localhost/%s' % (os.environ['METHINKS_DB_USER'],
+                                              os.environ['METHINKS_DB_PASSWD'],
+                                              os.environ['METHINKS_DB_NAME'])
 
 
 def create_app():
@@ -97,9 +97,3 @@ def delete_entry():
     except Exception as e:
         return response(False, msg=repr(e))
     return response(200, 'OK')
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run server')
-    args = parser.parse_args()
-    app.run(host='0.0.0.0', port=8000, debug=True)
