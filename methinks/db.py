@@ -4,6 +4,8 @@ import xxhash
 import json
 from flask_sqlalchemy import SQLAlchemy
 
+from methinks.utils import str_to_date
+
 
 db = SQLAlchemy()
 
@@ -27,6 +29,8 @@ class Entry(db.Model):
             raise AttributeError('hexid cannot be set')
         self.text = data.pop('text')
         self.date = data.pop('date')
+        if 'last_edited' in data:
+            self.last_edited = data.pop('last_edited')
         assert type(self.date) is datetime.date
         self.misc = data
 
@@ -59,8 +63,15 @@ class Entry(db.Model):
                  text=self.text,
                  date=self.date,
                  last_edited=self.last_edited,
-                 misc=self.misc)
+                 **self.misc)
         return d
+
+    @classmethod
+    def from_dict(cl, data):
+        return Entry(text=data['text'],
+                     date=str_to_date(data['date']).date(),
+                     last_edited=str_to_date(data['last_edited']),
+                     **data.get('misc', {}))
 
     def to_file(self, folderpath):
         path = os.path.join(folderpath, self.filename)
@@ -72,5 +83,12 @@ class Entry(db.Model):
         with open(filepath, 'r') as f:
             contents = f.read()
         filename = os.path.basename(filepath).replace('.md', '')
-        date = cl.string_to_date(filename)
-        return Entry(text=contents, date=date)
+        if filename == 'template':
+            date = datetime.date.today()
+            last_edited = datetime.datetime.min
+        else:
+            date = cl.string_to_date(filename)
+            mtime = os.path.getmtime(filepath)
+            last_edited = datetime.datetime.fromtimestamp(mtime)
+
+        return Entry(text=contents, date=date, last_edited=last_edited)

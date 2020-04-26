@@ -1,20 +1,14 @@
-#!/usr/bin/env python
-import re
+#!/usr/bin/env python3
 import os
+import datetime
 from argparse import ArgumentParser
 
+from methinks.db import Entry
+from methinks.api import MethinksAPI
+from methinks.parse import parse_sections
 from methinks.section import PersistentSection
 from methinks.section import VolatileSection
 from methinks.section import TodosSection
-
-
-# Match sections from a methinks entry
-# A title is any markdown style header
-# Content is any text included on the next line after header
-# Until you meet next header or end of file (\Z)
-# (?P<name>...) Captures content in parentheses as attr name
-# (?=...) Is a lookahead that checks content but doesn't consume input
-RE_SPLIT_SECTIONS = r'(?P<section>^#+(?P<title>.*?)\n(?P<content>.*?))(?=^#|\Z)'
 
 
 if __name__ == "__main__":
@@ -22,22 +16,42 @@ if __name__ == "__main__":
     parser.add_argument("--infile", type=str, help="The file to process")
     args = parser.parse_args()
 
-    with open(args.infile, 'r') as f:
-        data = f.read()
+    api = MethinksAPI(os.environ['METHINKS_HOST'])
 
-    reg = re.compile(RE_SPLIT_SECTIONS, re.MULTILINE | re.DOTALL)
+    # Fetch latest entry from remote
+    remote_entry = api.get_latest()
 
-    triggers = {'Todos': TodosSection,
-                'Notes': PersistentSection,
-                'Conclusions': VolatileSection,
-                'Resources': VolatileSection,
-                'Papers': VolatileSection,
-                'Quotes': VolatileSection}
+    local_entry = Entry.from_file(args.infile)
 
-    sections = []
-    for match in reg.finditer(data):
-        section, title = match['section'], match['title']
-        title = title.strip()
-        sec = triggers[title].from_text(section)
-        sections.append(sec.propagate())
-    print(''.join(sections), end='')
+    # If the remote version has been modified more recently
+    # fetch the remote entry
+    if remote_entry:
+        if remote_entry.last_edited > local_entry.last_edited:
+            local_entry = remote_entry
+
+    # If the date we are processing is different, we need to process the input
+    if local_entry.date != datetime.date.today():
+
+        triggers = {'Todos': TodosSection,
+                    'Notes': PersistentSection,
+                    'Conclusions': VolatileSection,
+                    'Resources': VolatileSection,
+                    'Papers': VolatileSection,
+                    'Quotes': VolatileSection}
+
+        sections = parse_sections(local_entry.text, triggers)
+        new_text = ''.join(sections)
+
+        # Update local_entry
+        local_entry.text = new_text
+        local_entry.date = datetime.date.today()
+
+    # If this entry already exists on remote - update it - else create it
+    if remote_entry and remote_entry.date == local_entry.date:
+        # If there have been any changes
+        if remote_entry.hash != local_entry.hash:
+            local_entry = api.update_entry(local_entry)
+    else:
+        local_entry = api.create_entry(local_entry)
+
+    print(local_entry.text, end='')

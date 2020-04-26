@@ -54,7 +54,7 @@ class TodosSection(Section):
     """A section including todos as [ ] style lists"""
 
     RE_TITLE_CONTENT = r'(?P<title>^#+.*?)\n(?P<content>.*)'
-    RE_TODO = r'(?P<todo>\[ \].*?)(?=(\[ \]|\Z))'
+    RE_TODO = r'(?P<todo>[-+*]?\s*?\[ \].*?)(?=([-+*]?\s*?\[x?\]|\Z))'
 
     def __init__(self, title, todos):
         super().__init__()
