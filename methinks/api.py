@@ -47,7 +47,10 @@ class MethinksAPI(object):
 
     def get_latest(self):
         r = self._get_json('%s/entries/latest' % self.url)
-        entry = Entry.from_dict(r['data']) if r['data'] else None
+        if self.status:
+            entry = Entry.from_dict(r['data'])
+        else:
+            entry = None
         return entry
 
     def create_entry(self, entry):

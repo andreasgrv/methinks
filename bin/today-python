@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 import datetime
 from argparse import ArgumentParser
 
@@ -50,8 +51,16 @@ if __name__ == "__main__":
     if remote_entry and remote_entry.date == local_entry.date:
         # If there have been any changes
         if remote_entry.hash != local_entry.hash:
-            local_entry = api.update_entry(local_entry)
+            response = api.update_entry(local_entry)
+            if response is not None:
+                local_entry = response
+            else:
+                print('ERROR: Methinks remote not working', file=sys.stderr)
     else:
-        local_entry = api.create_entry(local_entry)
+        response = api.create_entry(local_entry)
+        if response is not None:
+            local_entry = response
+        else:
+            print('ERROR: Methinks remote not working', file=sys.stderr)
 
     print(local_entry.text, end='')

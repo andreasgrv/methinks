@@ -5,7 +5,7 @@ from flask import Flask, request
 from flask_migrate import Migrate
 from methinks.db import db, Entry
 from methinks.utils import str_to_date
-from utils import response
+from utils import response, validate_post, validate_get
 
 
 db_uri = 'postgresql://%s:%s@localhost/%s' % (os.environ['DB_USER'],
@@ -36,20 +36,23 @@ def root():
 
 @app.route('/entries/<date>')
 def get_entry(date):
-    if date == 'latest':
-        entry = Entry.query.order_by(Entry.date.desc()).first()
-    else:
-        d = Entry.string_to_date(date)
-        entry = Entry.query.filter_by(date=d).first()
-    entry = {} if not entry else entry.as_dict()
-    return response(True, 'OK', data=entry)
+    try:
+        validate_get(request)
+        if date == 'latest':
+            entry = Entry.query.order_by(Entry.date.desc()).first()
+        else:
+            d = Entry.string_to_date(date)
+            entry = Entry.query.filter_by(date=d).first()
+        entry = {} if not entry else entry.as_dict()
+        return response(True, 'OK', data=entry)
+    except Exception as e:
+        return response(False, msg=repr(e))
 
 
 @app.route('/entries/create', methods=['POST'])
 def create_entry():
     try:
-        data = dict(request.json)
-        token = data.pop('token')
+        data = dict(validate_post(request))
         text = data.pop('text')
         dt = data.pop('date')
         dt = str_to_date(dt)
@@ -64,8 +67,7 @@ def create_entry():
 @app.route('/entries/update', methods=['POST'])
 def update_entry():
     try:
-        data = dict(request.json)
-        token = data.pop('token')
+        data = dict(validate_post(request))
         text = data.pop('text')
         dt = data.pop('date')
         dt = str_to_date(dt)
@@ -75,7 +77,6 @@ def update_entry():
         entry.text = text
         entry.misc = data
         entry.last_edited = datetime.datetime.now()
-        print(entry)
         db.session.add(entry)
         db.session.commit()
         return response(True, 'OK', data=entry.as_dict())
@@ -86,7 +87,8 @@ def update_entry():
 @app.route('/entries/delete', methods=['POST'])
 def delete_entry():
     try:
-        dt = str_to_date(request.json['date'])
+        data = dict(validate_post(request))
+        dt = str_to_date(data['date'])
         entry = Entry.query.filter_by(date=dt.date()).first()
         if entry:
             db.session.delete(entry)

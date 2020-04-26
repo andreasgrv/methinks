@@ -12,7 +12,12 @@ function find_last_entry {
 		prev_fname=$(date --date="$i day ago" +"%Y-%m-%d-%a.md")
 		if [ -f $prev_fname ]
 		then
-			printf "Previous entry was %d day(s) ago.\n" $i
+			if [ $i -eq 0 ]
+			then
+				printf "Loading today's entry that already exists.\n"
+			else
+				printf "Previous entry was %d day(s) ago.\n" $i
+			fi
 			PREV_FOUND=$prev_fname
 			break
 		fi
