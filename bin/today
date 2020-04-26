@@ -1,6 +1,4 @@
 #!/bin/bash
-HERE=$(dirname $(realpath $0))
-
 # Assumes this is run from the directory you have diary entries in.
 
 MEMORY=30
