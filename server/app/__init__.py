@@ -1,11 +1,9 @@
 import os
-import argparse
-import datetime
-from flask import Flask, request
+from flask import Flask
 from flask_migrate import Migrate
-from methinks.db import db, Entry
-from methinks.utils import str_to_date
-from app.utils import response, validate_post, validate_get
+
+from methinks.db import db
+from app.methinks import methinks_routes
 
 
 db_uri = 'postgresql://%s:%s@localhost/%s' % (os.environ['METHINKS_DB_USER'],
@@ -20,6 +18,8 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['DEBUG'] = True
 
+    app.register_blueprint(methinks_routes, url_prefix='/methinks')
+
     db.init_app(app)
     migrate = Migrate(app, db)
     # global options
@@ -27,73 +27,3 @@ def create_app():
 
 
 app = create_app()
-
-
-@app.route('/')
-def root():
-    return ''
-
-
-@app.route('/entries/<date>')
-def get_entry(date):
-    try:
-        validate_get(request)
-        if date == 'latest':
-            entry = Entry.query.order_by(Entry.date.desc()).first()
-        else:
-            d = Entry.string_to_date(date)
-            entry = Entry.query.filter_by(date=d).first()
-        entry = {} if not entry else entry.as_dict()
-        return response(True, 'OK', data=entry)
-    except Exception as e:
-        return response(False, msg=repr(e))
-
-
-@app.route('/entries/create', methods=['POST'])
-def create_entry():
-    try:
-        data = dict(validate_post(request))
-        text = data.pop('text')
-        dt = data.pop('date')
-        dt = str_to_date(dt)
-        entry = Entry(text=text, date=dt.date(), **data)
-        db.session.add(entry)
-        db.session.commit()
-        return response(True, 'OK', data=entry.as_dict())
-    except Exception as e:
-        return response(False, msg=repr(e))
-
-
-@app.route('/entries/update', methods=['POST'])
-def update_entry():
-    try:
-        data = dict(validate_post(request))
-        text = data.pop('text')
-        dt = data.pop('date')
-        dt = str_to_date(dt)
-        entry = Entry.query.filter_by(date=dt.date()).first()
-        if entry is None:
-            raise ValueError("Failed to update entry.")
-        entry.text = text
-        entry.misc = data
-        entry.last_edited = datetime.datetime.now()
-        db.session.add(entry)
-        db.session.commit()
-        return response(True, 'OK', data=entry.as_dict())
-    except Exception as e:
-        return response(False, msg=repr(e))
-
-
-@app.route('/entries/delete', methods=['POST'])
-def delete_entry():
-    try:
-        data = dict(validate_post(request))
-        dt = str_to_date(data['date'])
-        entry = Entry.query.filter_by(date=dt.date()).first()
-        if entry:
-            db.session.delete(entry)
-            db.session.commit()
-        return response(True, 'OK')
-    except Exception as e:
-        return response(False, msg=repr(e))
-    return response(200, 'OK')
