@@ -11,6 +11,6 @@ This is still work in progress: first week of trial and error started on *Sun 20
 
 ## Todos
 
-- [ ] Add a blueprint to serve the files from a flask app
+- [x] Add a blueprint to serve the files from a flask app
 - [ ] Make entries visible on my website
 - [ ] Make template configurable
