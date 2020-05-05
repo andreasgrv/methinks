@@ -38,6 +38,7 @@ if __name__ == "__main__":
     if local_entry.date != datetime.date.today():
 
         triggers = {'Todos': TodosSection,
+                    'Meeting points': TodosSection,
                     'Notes': PersistentSection,
                     'Conclusions': VolatileSection,
                     'Resources': VolatileSection,

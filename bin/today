@@ -37,4 +37,6 @@ then
 	echo "$CONTENT" > $FNAME
 	printf "Entry created: %s\n" $FNAME
 	vim $FNAME
+	CONTENT=$(today-python --infile $FNAME)
+	echo "$CONTENT" > $FNAME
 fi
