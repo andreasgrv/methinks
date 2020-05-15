@@ -3,7 +3,7 @@ from flask import Flask
 from flask_migrate import Migrate
 
 from methinks.db import db
-from app.methinks import methinks_routes
+from server.app.methinks import methinks_routes
 
 
 db_uri = 'postgresql://%s:%s@localhost/%s' % (os.environ['METHINKS_DB_USER'],

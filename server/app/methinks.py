@@ -2,7 +2,7 @@ import datetime
 from flask import Blueprint, request
 from methinks.db import db, Entry
 from methinks.utils import str_to_date
-from app.utils import response, validate_post, validate_get
+from server.app.utils import response, validate_post, validate_get
 
 
 methinks_routes = Blueprint('methinks_routes', __name__)
