@@ -1,13 +1,5 @@
 import re
-
-
-# Match sections from a methinks entry
-# A title is any markdown style header
-# Content is any text included on the next line after header
-# Until you meet next header or end of file (\Z)
-# (?P<name>...) Captures content in parentheses as attr name
-# (?=...) Is a lookahead that checks content but doesn't consume input
-RE_SPLIT_SECTIONS = r'(?P<section>^#+(?P<title>.*?)\n(?P<content>.*?))(?=^#|\Z)'
+from methinks.section import RE_SPLIT_SECTIONS
 
 
 def parse_sections(text, triggers):

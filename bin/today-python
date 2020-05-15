@@ -14,7 +14,7 @@ from methinks.section import TodosSection
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="today.py script")
-    parser.add_argument("--infile", type=str, help="The file to process")
+    parser.add_argument("--infile", type=str, required=True, help="The file to process")
     args = parser.parse_args()
 
     api = MethinksAPI(os.environ['METHINKS_HOST'])

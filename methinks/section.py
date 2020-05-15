@@ -1,6 +1,16 @@
 import re
 
 
+# Match sections from a methinks entry
+# A title is any markdown style header
+# Content is any text included on the next line after header
+# Until you meet next header or end of file (\Z)
+# (?P<name>...) Captures content in parentheses as attr name
+# (?=...) Is a lookahead that checks content but doesn't consume input
+RE_SPLIT_SECTIONS = r'(?P<section>^#(?P<title>[^#]*?)\n(?P<content>.*?))(?=^#[^#]|\Z)'
+RE_TITLE_CONTENT = r'(?P<title>^#+.*?)\n(?P<content>.*)'
+
+
 class Section(object):
     """A section in a methinks journal entry"""
     def __init__(self):
@@ -32,8 +42,6 @@ class PersistentSection(Section):
 class VolatileSection(Section):
     """A section that drops its contents"""
 
-    RE_TITLE_CONTENT = r'(?P<title>^#+.*?)\n(?P<content>.*)'
-
     def __init__(self, title, content):
         super().__init__()
         self.title = title
@@ -44,7 +52,7 @@ class VolatileSection(Section):
 
     @classmethod
     def from_text(cl, text):
-        regex = re.compile(cl.RE_TITLE_CONTENT, re.MULTILINE | re.DOTALL)
+        regex = re.compile(RE_TITLE_CONTENT, re.MULTILINE | re.DOTALL)
         match = next(regex.finditer(text))
         title, content = match['title'], match['content']
         return cl(title, content)
@@ -53,7 +61,6 @@ class VolatileSection(Section):
 class TodosSection(Section):
     """A section including todos as [ ] style lists"""
 
-    RE_TITLE_CONTENT = r'(?P<title>^#+.*?)\n(?P<content>.*)'
     RE_TODO = r'(?P<todo>[-+*]?\s*?\[ \].*?)(?=([-+*]?\s*?\[x?\]|\Z))'
 
     def __init__(self, title, todos):
@@ -67,7 +74,7 @@ class TodosSection(Section):
 
     @classmethod
     def from_text(cl, text):
-        regex = re.compile(cl.RE_TITLE_CONTENT, re.MULTILINE | re.DOTALL)
+        regex = re.compile(RE_TITLE_CONTENT, re.MULTILINE | re.DOTALL)
         match = next(regex.finditer(text))
         todo_regex = re.compile(cl.RE_TODO, re.MULTILINE | re.DOTALL)
         title, content = match['title'], match['content']

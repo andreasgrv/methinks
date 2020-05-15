@@ -1,15 +1,15 @@
-## Todos
+# Todos
 - [ ] Sample todo
 - [x] Sample todone
 
-## Meeting points
+# Meeting points
 
-## Notes
+# Notes
 
-## Conclusions
+# Conclusions
 
-## Resources
+# Resources
 
-## Papers
+# Papers
 
-## Quotes
+# Quotes

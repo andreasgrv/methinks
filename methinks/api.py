@@ -6,7 +6,6 @@ from methinks.db import Entry
 from methinks.utils import data_to_json
 
 
-
 SECRET_TOKEN = os.environ['METHINKS_TOKEN']
 
 
