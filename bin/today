@@ -1,6 +1,13 @@
 #!/bin/bash
 # Assumes this is run from the directory you have diary entries in.
 
+# If we find the host environment variable set, assume host is setup
+# and we want to communicate and pull changes where possible
+if [[ $METHINKS_HOST ]]
+then
+	REMOTE_ARG="--remote"
+fi
+
 MEMORY=30
 
 function find_last_entry {
@@ -28,15 +35,15 @@ find_last_entry
 # If the variable is set from the function
 if [[ $PREV_FOUND ]]
 then
-	CONTENT=$(today-python --infile $PREV_FOUND --remote)
+	CONTENT=$(today-python --infile $PREV_FOUND $REMOTE_ARG)
 else
-	CONTENT=$(today-python --remote)
+	CONTENT=$(today-python $REMOTE_ARG)
 fi
 if [ $? -eq 0 ]
 then
 	echo "$CONTENT" > $FNAME
 	printf "Entry created: %s\n" $FNAME
 	vim $FNAME
-	CONTENT=$(today-python --infile $FNAME --remote)
+	CONTENT=$(today-python --infile $FNAME $REMOTE_ARG)
 	echo "$CONTENT" > $FNAME
 fi
