@@ -46,7 +46,7 @@ if [ $? -eq 0 ]
 then
 	echo "$CONTENT" > $FNAME
 	printf "Entry created: %s\n" $FNAME
-	vim $FNAME
+	$METHINKS_EDITOR $FNAME
 	CONTENT=$(today-python --infile $FNAME $REMOTE_ARG)
 	echo "$CONTENT" > $FNAME
 fi
