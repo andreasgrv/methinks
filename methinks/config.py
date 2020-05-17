@@ -25,6 +25,13 @@ class ConfigLoader(object):
         entries = self.conf
         return yaml.dump(entries, sort_keys=False)
 
+    def __getitem__(self, key):
+        return self.conf[key]
+
+    def __setitem__(self, key):
+        # No reason to support mutability of config
+        raise NotImplementedError
+
     @property
     def sections(self):
         return self.conf['sections']

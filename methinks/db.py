@@ -5,6 +5,7 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 
 from methinks.utils import str_to_date
+from methinks.config import get_default_conf
 
 
 db = SQLAlchemy()
@@ -12,8 +13,6 @@ db = SQLAlchemy()
 
 class Entry(db.Model):
     __tablename__ = 'entry'
-
-    DATEFORMAT = '%Y-%m-%d-%a'
 
     id = db.Column(db.Integer, primary_key=True)
     hexid = db.Column(db.String(16), unique=True, nullable=False, index=True)
@@ -47,11 +46,12 @@ class Entry(db.Model):
 
     @classmethod
     def string_to_date(cl, text):
-        return datetime.datetime.strptime(text, cl.DATEFORMAT).date()
+        return datetime.datetime.strptime(text,
+                                          get_default_conf()['dateformat']).date()
 
     @classmethod
     def date_to_string(cl, date):
-        return date.strftime(cl.DATEFORMAT)
+        return date.strftime(get_default_conf()['dateformat'])
 
     @property
     def filename(self):
