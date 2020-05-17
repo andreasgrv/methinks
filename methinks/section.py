@@ -20,7 +20,12 @@ class Section(object):
         raise NotImplementedError()
 
     @classmethod
-    def from_text(self, text):
+    def default_text(cl, title):
+        """Set a default return, for the first time an entry is instatiated"""
+        return "#%s\n" % title
+
+    @classmethod
+    def from_text(cl, text):
         """Propagate to next entry"""
         raise NotImplementedError()
 
@@ -33,6 +38,13 @@ class PersistentSection(Section):
 
     def propagate(self):
         return self.text
+
+    @classmethod
+    def default_text(cl, title):
+        header = super().default_text(title)
+        note = 'this will persist in next entries until you delete it'
+        body = '<your text about %s here> - %s' % (title, note)
+        return '%s\n%s\n' % (header, body)
 
     @classmethod
     def from_text(cl, text):
@@ -49,6 +61,13 @@ class VolatileSection(Section):
 
     def propagate(self):
         return '%s\n' % self.title
+
+    @classmethod
+    def default_text(cl, title):
+        header = super().default_text(title)
+        note = 'this will not persist tomorrow - but will be kept in history'
+        body = '<your text about %s here> - %s' % (title, note)
+        return '%s\n%s\n' % (header, body)
 
     @classmethod
     def from_text(cl, text):
@@ -71,6 +90,13 @@ class TodosSection(Section):
     def propagate(self):
         todo_str = ''.join(self.todos)
         return '%s\n%s' % (self.title, todo_str)
+
+    @classmethod
+    def default_text(cl, title):
+        header = super().default_text(title)
+        examples = ["* [ ] An example incomplete item (will be carried over).",
+                    "* [x] An example completed item (will be dropped tomorrow)."]
+        return '%s%s\n' % (header, '\n'.join(examples))
 
     @classmethod
     def from_text(cl, text):

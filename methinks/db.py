@@ -96,10 +96,10 @@ class Entry(db.Model):
     @classmethod
     def from_config(cl, config):
         sections = []
-        for sec in config.sections:
-            line = '#%s' % sec['title']
+        for title, cl in config.triggers.items():
+            line = cl.default_text(title)
             sections.append(line)
-        contents = '%s\n' % '\n\n'.join(sections)
+        contents = '%s\n' % '\n'.join(sections)
         date = datetime.date.today()
         last_edited = datetime.datetime.min
 
