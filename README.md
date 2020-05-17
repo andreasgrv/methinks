@@ -68,3 +68,4 @@ export METHINKS_TOKEN="My server token"
 - [x] Add a blueprint to serve the files from a flask app
 - [x] Make template configurable
 - [ ] Make entries visible on my website
+- [ ] Implement search functionality

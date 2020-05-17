@@ -8,6 +8,7 @@ setup(
       author='Andreas Grivas',
       author_email='andreasgrv@gmail.com',
       description='Keep track of your reading, your todos and your notes. Whatever thinketh you.',
+      download_url = 'https://github.com/andreasgrv/methinks/archive/0.0.1.tar.gz',
       license='BSD',
       keywords=['self reporting'],
       scripts=['bin/today',
@@ -15,6 +16,6 @@ setup(
                'bin/methinks-env'
                ],
       classifiers=[],
-      python_requires='>=3.5',
+      python_requires='>=3.6',
       tests_require=['pytest'],
 )
