@@ -28,15 +28,15 @@ find_last_entry
 # If the variable is set from the function
 if [[ $PREV_FOUND ]]
 then
-	CONTENT=$(today-python --infile $PREV_FOUND)
+	CONTENT=$(today-python --infile $PREV_FOUND --remote)
 else
-	CONTENT=$(today-python --infile $METHINKS_TEMPLATE)
+	CONTENT=$(today-python --remote)
 fi
 if [ $? -eq 0 ]
 then
 	echo "$CONTENT" > $FNAME
 	printf "Entry created: %s\n" $FNAME
 	vim $FNAME
-	CONTENT=$(today-python --infile $FNAME)
+	CONTENT=$(today-python --infile $FNAME --remote)
 	echo "$CONTENT" > $FNAME
 fi

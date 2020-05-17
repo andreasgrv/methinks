@@ -2,7 +2,7 @@ import re
 
 
 # Match sections from a methinks entry
-# A title is any markdown style header
+# A title is any markdown style header h1
 # Content is any text included on the next line after header
 # Until you meet next header or end of file (\Z)
 # (?P<name>...) Captures content in parentheses as attr name
@@ -40,7 +40,7 @@ class PersistentSection(Section):
 
 
 class VolatileSection(Section):
-    """A section that drops its contents"""
+    """A section that drops its contents (applies to single timestep)"""
 
     def __init__(self, title, content):
         super().__init__()

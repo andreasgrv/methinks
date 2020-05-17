@@ -92,3 +92,15 @@ class Entry(db.Model):
             last_edited = datetime.datetime.fromtimestamp(mtime)
 
         return Entry(text=contents, date=date, last_edited=last_edited)
+
+    @classmethod
+    def from_config(cl, config):
+        sections = []
+        for sec in config.sections:
+            line = '#%s' % sec['title']
+            sections.append(line)
+        contents = '%s\n' % '\n\n'.join(sections)
+        date = datetime.date.today()
+        last_edited = datetime.datetime.min
+
+        return Entry(text=contents, date=date, last_edited=last_edited)
