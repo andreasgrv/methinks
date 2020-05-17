@@ -4,10 +4,10 @@ import sys
 import datetime
 from argparse import ArgumentParser
 
+from methinks import config as conf
 from methinks.db import Entry
 from methinks.api import MethinksAPI
 from methinks.parse import parse_sections
-from methinks.config import ConfigLoader
 
 
 if __name__ == "__main__":
@@ -20,9 +20,9 @@ if __name__ == "__main__":
                         help="Help text")
     args = parser.parse_args()
 
-    args.config = args.config or os.environ['METHINKS_CONFIG']
+    args.config = args.config or conf.DEFAULT_CONF_PATH
 
-    config = ConfigLoader.from_file(args.config)
+    config = conf.ConfigLoader.from_file(args.config)
     if args.infile:
         local_entry = Entry.from_file(args.infile)
     else:

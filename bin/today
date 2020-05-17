@@ -1,6 +1,9 @@
 #!/bin/bash
 # Assumes this is run from the directory you have diary entries in.
 
+# Source environment variables from python config file
+source <(methinks-env)
+
 # If we find the host environment variable set, assume host is setup
 # and we want to communicate and pull changes where possible
 if [[ $METHINKS_HOST ]]

@@ -11,7 +11,8 @@ setup(
       license='BSD',
       keywords=['self reporting'],
       scripts=['bin/today',
-               'bin/today-python'
+               'bin/today-python',
+               'bin/methinks-env'
                ],
       classifiers=[],
       python_requires='>=3.5',
