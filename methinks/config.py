@@ -1,11 +1,13 @@
 import os
-import importlib
 import yaml
+import requests
+import importlib
+from pathlib import Path
 
 
-MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(MODULE_DIR)
-DEFAULT_CONF_PATH = os.path.join(ROOT_DIR, 'config', 'config.yaml')
+HOME_DIR = str(Path.home())
+DEFAULT_CONF_PATH = os.path.join(HOME_DIR, '.config', 'methinks', 'config.yaml')
+REMOTE_CONFIG = 'https://raw.githubusercontent.com/andreasgrv/methinks/master/config/config.yaml'
 
 
 default_conf = None
@@ -73,5 +75,11 @@ class ConfigLoader(object):
 def get_default_conf():
     global default_conf
     if default_conf is None:
+        config_file = Path(DEFAULT_CONF_PATH)
+        if not config_file.is_file():
+            # Make config dir if non-existent
+            config_file.parent.mkdir(parents=True, exist_ok=True)
+            response = requests.get(REMOTE_CONFIG)
+            config_file.write_bytes(response.content)
         default_conf = ConfigLoader.from_file(DEFAULT_CONF_PATH)
     return default_conf
