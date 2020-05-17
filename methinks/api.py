@@ -6,9 +6,6 @@ from methinks.db import Entry
 from methinks.utils import data_to_json
 
 
-SECRET_TOKEN = os.environ['METHINKS_TOKEN']
-
-
 class MethinksAPI(object):
     """Class that implements api to manipulate remote"""
 
@@ -24,6 +21,7 @@ class MethinksAPI(object):
         self.message = None
 
     def _post_json(self, url, data_dict):
+        SECRET_TOKEN = os.environ['METHINKS_TOKEN']
         data_dict['token'] = SECRET_TOKEN
         data = data_to_json(data_dict)
         r = requests.post(url,
@@ -35,6 +33,7 @@ class MethinksAPI(object):
         return response
 
     def _get_json(self, url):
+        SECRET_TOKEN = os.environ['METHINKS_TOKEN']
         params = dict(token=SECRET_TOKEN)
         response = json.loads(requests.get(url, params=params).text)
         self.status = response.pop(MethinksAPI.STATUS)
