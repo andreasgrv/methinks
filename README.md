@@ -1,36 +1,43 @@
 # methinks
 
+## Features
 A vain attempt to make myself a bit more organized and supervisable.
 
 * Create a **markdown** diary entry per day.
-* Files support **TODO**s and general **note-taking** sections which track history across days.
-* **Configure** your own sections using `config.yaml`
-* If remote is installed, files can be synced across computers.
+* Entries support **TODO**s and general **note-taking** sections which track history across days.
+* **Configure** your own sections - see [config](config/config.yaml) for config options.
+* If remote server is installed, files can be synced across computers.
 
 This is still work in progress: first week of trial and error started on *Sun 2020-04-26 21:53*.
 
 ## Installation
 
-### Install with local support (persist only to files in local folder)
+### Install with local support only (persist files in local folder)
 
+Need to pip install as **--user** so that scripts get added to user path
 ```bash
-git clone https://github.com/andreasgrv/methinks
-pip install --user -r requirements.txt
-pip install --user .
-
-# Add the following to your .bashrc (or any other way you want to source this)
-export METHINKS_CONFIG="path/to/methinks/config/config.yaml"
+pip install --user methinks
 ```
 
-You should now be ready to generate your first diary entry by running the `today` command.
+Install methinks [config](config/config.yaml) locally by running:
 ```bash
+methinks-env
+```
+*(Optional): Modify [config](config/config.yaml) file, which has been installed under your home directory: `$HOME/.config/methinks/config.yaml`.*
+
+Generate your first diary entry:
+```bash
+cd mydiaryfolder
 today
 ```
-To modify the structure of the entry, you can modify the [config](config/config.yaml) file.
 
-### Install with remote support (persist to remote db)
+That's you set up locally.
 
-#### Setup server
+Use `today` whenever you want to update or view your current entry. If a previous entry is found, information will be propagated into a fresh entry for today.
+
+### To persist files across computers, follow instructions below
+
+#### Setup server (needs to be accessible from other machines)
 ```bash
 git clone https://github.com/andreasgrv/methinks
 python3.7 -m venv .env
@@ -50,18 +57,9 @@ cd server
 ./run.sh
 ```
 
-#### Update client to support sync with server
+#### Update client config to support sync with server
 
-```bash
-git clone https://github.com/andreasgrv/methinks
-pip install --user -r requirements.txt
-pip install --user .
-
-# Add the following to your .bashrc (or any other way you want to source these)
-export METHINKS_CONFIG="path/to/methinks/config/config.yaml"
-export METHINKS_HOST="https://myserver-url"
-export METHINKS_TOKEN="My server token"
-```
+Open `$HOME/.config/methinks/config.yaml`, uncomment the remote section and adapt to your server setup carried out in the previous section.
 
 ## Todos
 
